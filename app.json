@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "star-gym",
-    "slug": "star-gym",
+    "name": "your-app-name",
+    "slug": "your-app-name",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,8 +23,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-font"
-    ]
+    "plugins": ["expo-font"]
   }
 }
