@@ -2,7 +2,7 @@ import tailwindConfig from '@/../tailwind.config'
 import resolveConfig from 'tailwindcss/resolveConfig'
 
 const { theme: tailwindTheme } = resolveConfig(tailwindConfig)
-const { colors: tailwindColors, spacing } = tailwindTheme
+const { colors: tailwindColors } = tailwindTheme
 
 export const theme = {
   colors: {
@@ -26,8 +26,5 @@ export const theme = {
     destructive: 'hsl(339.2, 90.36%, 51.18%)',
     'destructive-foreground': 'hsl(0, 0%, 100%)',
     ring: 'hsl(253, 91%, 58%)',
-  },
-  spacings: {
-    ...spacing,
   },
 }

@@ -1,7 +1,6 @@
 import { LucideCircleUserRound, LucideHistory, LucideHome } from '@/components/icons'
 import { ExerciseScreen } from '@/screens/exercise'
 import { HistoryScreen } from '@/screens/history'
-
 import { HomeScreen } from '@/screens/home'
 import { ProfileScreen } from '@/screens/profile'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -46,6 +45,7 @@ export const AppRoutes = () => {
             <LucideHome
               color={color}
               className='size-6'
+              accessibilityLabel='Ir para o início'
             />
           ),
         }}
@@ -59,6 +59,7 @@ export const AppRoutes = () => {
             <LucideHistory
               color={color}
               className='size-6'
+              accessibilityLabel='Acessar Histórico'
             />
           ),
         }}
@@ -72,6 +73,7 @@ export const AppRoutes = () => {
             <LucideCircleUserRound
               color={color}
               className='size-6'
+              accessibilityLabel='Acessar Perfil'
             />
           ),
         }}
