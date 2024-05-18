@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     color: '#fafafa', // neutral 100
     paddingVertical: 24,
-    paddingHorizontal: 16,
+    paddingHorizontal: 32,
     justifyContent: 'space-between',
     alignItems: 'center',
   },

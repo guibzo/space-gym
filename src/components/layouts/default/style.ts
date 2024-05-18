@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
     color: '#fafafa', // neutral 100
     backgroundColor: '#171717', // neutral 900
     paddingVertical: 24,
-    paddingHorizontal: 16,
+    paddingHorizontal: 32,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -1,11 +1,11 @@
 import { ReactNode } from 'react'
-import { Image, StatusBar } from 'react-native'
+import { Image, StatusBar, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from './style'
 
 import BackgroundImg from '@/assets/background.png'
 import LogoSvg from '@/assets/logo.svg'
-import { Div } from '@expo/html-elements'
+import { Div, Header } from '@expo/html-elements'
 
 export const WithImageBGLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -24,7 +24,10 @@ export const WithImageBGLayout = ({ children }: { children: ReactNode }) => {
           translucent
         />
 
-        <LogoSvg />
+        <Header className='flex flex-col items-center gap-2'>
+          <LogoSvg />
+          <Text className='text-foreground font-light'>Treine sua mente e seu corpo</Text>
+        </Header>
 
         {children}
       </SafeAreaView>

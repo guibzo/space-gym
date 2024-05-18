@@ -1,6 +1,6 @@
 import { DefaultLayout } from '@/components/layouts/default'
 import { LoadingIndicator } from '@/components/loading-indicator'
-import { SignIn } from '@/screens/sign-in'
+import { SignUp } from '@/screens/sign-up'
 import { Roboto_400Regular, Roboto_700Bold, useFonts } from '@expo-google-fonts/roboto'
 import './global.css'
 
@@ -15,5 +15,5 @@ export default function App() {
     )
   }
 
-  return <SignIn />
+  return <SignUp />
 }
