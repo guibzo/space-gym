@@ -7,7 +7,7 @@ import BackgroundImg from '@/assets/background.png'
 import LogoSvg from '@/assets/logo.svg'
 import { Div, Header } from '@expo/html-elements'
 
-export const WithImageBGLayout = ({ children }: { children: ReactNode }) => {
+export const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
     <Div className='bg-neutral-900 flex-1'>
       <Image
@@ -15,6 +15,7 @@ export const WithImageBGLayout = ({ children }: { children: ReactNode }) => {
         className='absolute'
         alt='Pessoas treinando'
         source={BackgroundImg}
+        defaultSource={BackgroundImg}
       />
 
       <SafeAreaView style={styles.safeArea}>

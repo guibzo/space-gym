@@ -3,7 +3,7 @@ import { StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from './style'
 
-export const DefaultLayout = ({ children }: { children: ReactNode }) => {
+export const AppLayout = ({ children }: { children: ReactNode }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar

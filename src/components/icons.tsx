@@ -1,4 +1,4 @@
-import { LucideIcon, LucidePlus } from 'lucide-react-native'
+import { LucideCircleUserRound, LucideHistory, LucideHome, LucideIcon } from 'lucide-react-native'
 import { cssInterop } from 'nativewind'
 
 function interopIcon(icon: LucideIcon) {
@@ -13,6 +13,8 @@ function interopIcon(icon: LucideIcon) {
   })
 }
 
-interopIcon(LucidePlus)
+interopIcon(LucideHome)
+interopIcon(LucideHistory)
+interopIcon(LucideCircleUserRound)
 
-export { LucidePlus }
+export { LucideCircleUserRound, LucideHistory, LucideHome }

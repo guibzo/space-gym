@@ -4,7 +4,7 @@ export const NAV_THEME = {
     border: '215 27.9% 16.9%', // border
     card: '253 43% 4%', // card
     notification: '339.2 90.36% 51.18%', // destructive
-    primary: '253 91% 58%', // primary
+    primary: '253 38% 53%', // primary
     text: '253 31% 98%', // foreground
   },
 }

@@ -1,6 +1,6 @@
-import { DefaultLayout } from '@/components/layouts/default'
+import { AppLayout } from '@/components/layouts/app'
 import { LoadingIndicator } from '@/components/loading-indicator'
-import { SignUp } from '@/screens/sign-up'
+import { Router } from '@/routes/router'
 import { Roboto_400Regular, Roboto_700Bold, useFonts } from '@expo-google-fonts/roboto'
 import './global.css'
 
@@ -9,11 +9,11 @@ export default function App() {
 
   if (!areFontsLoaded) {
     return (
-      <DefaultLayout>
+      <AppLayout>
         <LoadingIndicator />
-      </DefaultLayout>
+      </AppLayout>
     )
   }
 
-  return <SignUp />
+  return <Router />
 }
