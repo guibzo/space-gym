@@ -4,7 +4,7 @@ import { Text } from '@/components/ui/text'
 export const ExerciseScreen = () => {
   return (
     <AppLayout>
-      <Text>Home</Text>
+      <Text>Exercise</Text>
     </AppLayout>
   )
 }

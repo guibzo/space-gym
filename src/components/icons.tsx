@@ -5,6 +5,7 @@ import {
   LucideHome,
   LucideIcon,
   LucideLogOut,
+  LucideSearchX,
   LucideUser,
 } from 'lucide-react-native'
 import { cssInterop } from 'nativewind'
@@ -27,6 +28,7 @@ interopIcon(LucideCircleUserRound)
 interopIcon(LucideLogOut)
 interopIcon(LucideUser)
 interopIcon(LucideChevronRight)
+interopIcon(LucideSearchX)
 
 export {
   LucideChevronRight,
@@ -34,5 +36,6 @@ export {
   LucideHistory,
   LucideHome,
   LucideLogOut,
+  LucideSearchX,
   LucideUser,
 }
