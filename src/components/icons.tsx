@@ -1,10 +1,14 @@
 import {
+  LucideArrowLeft,
   LucideChevronRight,
   LucideCircleUserRound,
+  LucideDumbbell,
   LucideHistory,
   LucideHome,
   LucideIcon,
   LucideLogOut,
+  LucidePersonStanding,
+  LucideRepeat,
   LucideSearchX,
   LucideUser,
 } from 'lucide-react-native'
@@ -28,14 +32,22 @@ interopIcon(LucideCircleUserRound)
 interopIcon(LucideLogOut)
 interopIcon(LucideUser)
 interopIcon(LucideChevronRight)
+interopIcon(LucideArrowLeft)
 interopIcon(LucideSearchX)
+interopIcon(LucidePersonStanding)
+interopIcon(LucideDumbbell)
+interopIcon(LucideRepeat)
 
 export {
+  LucideArrowLeft,
   LucideChevronRight,
   LucideCircleUserRound,
+  LucideDumbbell,
   LucideHistory,
   LucideHome,
   LucideLogOut,
+  LucidePersonStanding,
+  LucideRepeat,
   LucideSearchX,
   LucideUser,
 }

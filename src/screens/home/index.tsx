@@ -72,7 +72,7 @@ export const HomeScreen = () => {
             data={exercisesGroups}
             className='w-full h-12 mb-10'
             horizontal
-            keyExtractor={(_, index) => index.toString()}
+            keyExtractor={(item, index) => `${item}-${index.toString()}`}
             showsHorizontalScrollIndicator={false}
             contentContainerClassName='flex flex-row gap-4'
             renderItem={({ item: exerciseGroup, index }) => (
@@ -95,7 +95,7 @@ export const HomeScreen = () => {
           <FlatList
             data={exercises}
             className='w-full mb-10'
-            keyExtractor={(_, index) => index.toString()}
+            keyExtractor={(item, index) => `${item}-${index.toString()}`}
             contentContainerClassName='flex flex-col gap-3'
             renderItem={({ item: exercise, index }) => (
               <ExerciseCard

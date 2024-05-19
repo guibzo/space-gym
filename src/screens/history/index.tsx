@@ -47,8 +47,8 @@ export const HistoryScreen = () => {
       <AppLayout>
         <SectionList
           sections={exercises}
-          className='w-full mb-10'
-          keyExtractor={(_, index) => index.toString()}
+          className='w-full'
+          keyExtractor={(item, index) => `${item}-${index.toString()}`}
           contentContainerClassName={cn(
             'flex flex-col gap-3',
             exercises.length === 0 && 'flex-1 items-center justify-center'
