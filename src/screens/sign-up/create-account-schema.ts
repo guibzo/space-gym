@@ -1,10 +1,28 @@
 import { z } from 'zod'
 
-export const createAccountSchema = z.object({
-  name: z.string().min(2, { message: 'Seu nome deve ter ao menos 2 caracteres.' }),
-  email: z.string().email({ message: 'Insira um e-mail válido.' }),
-  password: z.string().min(6, { message: 'Sua senha deve ter ao menos 6 caracteres.' }),
-  confirmPassword: z.string().min(6),
-})
+export const createAccountSchema = z
+  .object({
+    name: z
+      .string({ required_error: 'Este campo é obrigatório.' })
+      .min(2, 'Seu nome deve ter ao menos 2 caracteres.'),
+    email: z
+      .string({ required_error: 'Este campo é obrigatório.' })
+      .email('Insira um e-mail válido.'),
+    password: z
+      .string({ required_error: 'Este campo é obrigatório.' })
+      .min(6, 'Sua senha deve ter pelo menos 6 caracteres.'),
+    confirmPassword: z
+      .string({ required_error: 'Este campo é obrigatório.' })
+      .min(6, 'Sua senha deve ter pelo menos 6 caracteres.'),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'As senhas devem ser iguais.',
+        path: ['confirmPassword'],
+      })
+    }
+  })
 
 export type CreateAccountSchema = z.infer<typeof createAccountSchema>

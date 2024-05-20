@@ -7,16 +7,7 @@ import { Div, H2 } from '@expo/html-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigation } from '@react-navigation/native'
 import { Controller, useForm } from 'react-hook-form'
-import { z } from 'zod'
-
-const createAccountSchema = z.object({
-  name: z.string().min(2, { message: 'Seu nome deve ter ao menos 2 caracteres.' }),
-  email: z.string().email({ message: 'Insira um e-mail válido.' }),
-  password: z.string().min(6, { message: 'Sua senha deve ter ao menos 6 caracteres.' }),
-  confirmPassword: z.string().min(6),
-})
-
-type CreateAccountSchema = z.infer<typeof createAccountSchema>
+import { createAccountSchema, type CreateAccountSchema } from './create-account-schema'
 
 export const SignUpScreen = () => {
   const {
@@ -45,17 +36,16 @@ export const SignUpScreen = () => {
             rules={{
               required: true,
             }}
-            render={({ field: { onChange } }) => (
+            render={({ field: { onChange, value } }) => (
               <Input
                 placeholder='Nome'
+                value={value}
                 onChangeText={onChange}
               />
             )}
           />
 
-          {errors.name && (
-            <Text className='m-0 text-red-500'>Insira seu nome com ao menos 2 caracteres.</Text>
-          )}
+          {errors.name && <Text className='m-0 text-red-500'>{errors.name.message}</Text>}
         </Div>
 
         <Div className='flex flex-col gap-1'>
@@ -65,17 +55,18 @@ export const SignUpScreen = () => {
             rules={{
               required: true,
             }}
-            render={({ field: { onChange } }) => (
+            render={({ field: { onChange, value } }) => (
               <Input
                 keyboardType='email-address'
                 placeholder='E-mail'
+                value={value}
                 autoCapitalize='none'
                 onChangeText={onChange}
               />
             )}
           />
 
-          {errors.email && <Text className='m-0 text-red-500'>Insira um e-mail válido.</Text>}
+          {errors.email && <Text className='m-0 text-red-500'>{errors.email.message}</Text>}
         </Div>
 
         <Div className='flex flex-col gap-1'>
@@ -85,19 +76,18 @@ export const SignUpScreen = () => {
             rules={{
               required: true,
             }}
-            render={({ field: { onChange } }) => (
+            render={({ field: { onChange, value } }) => (
               <Input
                 placeholder='Senha'
                 autoCapitalize='none'
                 secureTextEntry
+                value={value}
                 onChangeText={onChange}
               />
             )}
           />
 
-          {errors.password && (
-            <Text className='m-0 text-red-500'>Insira uma senha com 6 ou mais caracteres.</Text>
-          )}
+          {errors.password && <Text className='m-0 text-red-500'>{errors.password.message}</Text>}
         </Div>
 
         <Div className='flex flex-col gap-1'>
@@ -107,18 +97,19 @@ export const SignUpScreen = () => {
             rules={{
               required: true,
             }}
-            render={({ field: { onChange } }) => (
+            render={({ field: { onChange, value } }) => (
               <Input
                 placeholder='Confirme a senha'
                 autoCapitalize='none'
                 secureTextEntry
+                value={value}
                 onChangeText={onChange}
               />
             )}
           />
 
           {errors.confirmPassword && (
-            <Text className='m-0 text-red-500'>Insira uma senha com 6 ou mais caracteres.</Text>
+            <Text className='m-0 text-red-500'>{errors.confirmPassword.message}</Text>
           )}
         </Div>
 
