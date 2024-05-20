@@ -6,9 +6,42 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { Div, H3 } from '@expo/html-elements'
-import { ScrollView } from 'react-native'
+import { getInfoAsync } from 'expo-file-system'
+import { MediaTypeOptions, launchImageLibraryAsync } from 'expo-image-picker'
+import { useState } from 'react'
+import { Alert, ScrollView } from 'react-native'
 
 export const ProfileScreen = () => {
+  const [userAvatarUri, setUserAvatarUri] = useState<string | undefined>(undefined)
+
+  const handleSelectAvatarImage = async () => {
+    try {
+      const selectedImage = await launchImageLibraryAsync({
+        mediaTypes: MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      })
+
+      if (selectedImage.canceled) {
+        return
+      }
+
+      if (selectedImage.assets[0].uri) {
+        const photoInfo = await getInfoAsync(selectedImage.assets[0].uri)
+
+        // 5mb
+        if (photoInfo.exists && photoInfo.size / 1024 / 1024 > 5) {
+          return Alert.alert('Escolha uma imagem de no máximo 5MB.')
+        }
+
+        setUserAvatarUri(selectedImage.assets[0].uri)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <>
       <AppHeaderContainer>
@@ -20,13 +53,13 @@ export const ProfileScreen = () => {
       <AppLayout>
         <ScrollView
           className='w-full'
-          contentContainerClassName='items-center flex'
+          contentContainerClassName='items-center flex pb-3 pt-1'
         >
           <Avatar
             className='size-[148px] m-0 p-0 border-2 border-neutral-700'
             alt="Zach Nugent's Avatar"
           >
-            <AvatarImage source={{ uri: 'https://github.com/xbozo.png' }} />
+            <AvatarImage source={{ uri: userAvatarUri ?? undefined }} />
             <AvatarFallback>
               <LucideUser
                 size={74}
@@ -35,7 +68,11 @@ export const ProfileScreen = () => {
             </AvatarFallback>
           </Avatar>
 
-          <Button variant='ghost'>
+          <Button
+            variant='ghost'
+            onPress={handleSelectAvatarImage}
+            className='mt-2'
+          >
             <Text className='text-primary text-lg font-semibold'>Alterar foto</Text>
           </Button>
 
