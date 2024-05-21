@@ -2,11 +2,13 @@ import { AuthLayout } from '@/components/layouts/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
+import { api } from '@/lib/axios'
 import type { AuthNavigatorRoutesProps } from '@/routes/auth.routes'
 import { Div, H2 } from '@expo/html-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigation } from '@react-navigation/native'
 import { Controller, useForm } from 'react-hook-form'
+import { Alert } from 'react-native'
 import { createAccountSchema, type CreateAccountSchema } from './create-account-schema'
 
 export const SignUpScreen = () => {
@@ -20,8 +22,21 @@ export const SignUpScreen = () => {
 
   const { navigate } = useNavigation<AuthNavigatorRoutesProps>()
 
-  const onSubmit = (data: any) => {
-    console.log(data)
+  const handleCreateAccount = async ({ name, email, password }: CreateAccountSchema) => {
+    try {
+      await api
+        .post('/users', {
+          name,
+          email,
+          password,
+        })
+        .catch((error) => {})
+    } catch (error: any) {
+      Alert.alert(
+        error.response.data.message ??
+          'Não foi possível criar sua conta. Tente novamente mais tarde.'
+      )
+    }
   }
 
   return (
@@ -113,7 +128,7 @@ export const SignUpScreen = () => {
           )}
         </Div>
 
-        <Button onPress={handleSubmit(onSubmit)}>
+        <Button onPress={handleSubmit(handleCreateAccount)}>
           <Text>Criar e acessar</Text>
         </Button>
       </Div>
