@@ -6,6 +6,7 @@ import {
   LucideHistory,
   LucideHome,
   LucideIcon,
+  LucideLoaderCircle,
   LucideLogOut,
   LucidePersonStanding,
   LucideRepeat,
@@ -37,6 +38,7 @@ interopIcon(LucideSearchX)
 interopIcon(LucidePersonStanding)
 interopIcon(LucideDumbbell)
 interopIcon(LucideRepeat)
+interopIcon(LucideLoaderCircle)
 
 export {
   LucideArrowLeft,
@@ -45,6 +47,7 @@ export {
   LucideDumbbell,
   LucideHistory,
   LucideHome,
+  LucideLoaderCircle,
   LucideLogOut,
   LucidePersonStanding,
   LucideRepeat,

@@ -24,18 +24,17 @@ export const SignUpScreen = () => {
 
   const handleCreateAccount = async ({ name, email, password }: CreateAccountSchema) => {
     try {
-      await api
-        .post('/users', {
-          name,
-          email,
-          password,
-        })
-        .catch((error) => {})
+      await api.post('/users', {
+        name,
+        email,
+        password,
+      })
     } catch (error: any) {
       Alert.alert(
         error.response.data.message ??
           'Não foi possível criar sua conta. Tente novamente mais tarde.'
       )
+      // TO-DO: Add toast
     }
   }
 

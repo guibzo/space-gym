@@ -1,3 +1,4 @@
+import { LucideLoaderCircle } from '@/components/icons'
 import { AuthLayout } from '@/components/layouts/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,11 +9,14 @@ import type { AuthNavigatorRoutesProps } from '@/routes/auth.routes'
 import { Div, H2, Span } from '@expo/html-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigation } from '@react-navigation/native'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Alert } from 'react-native'
 import { signInSchema, type SignInSchema } from './sign-in-schema'
 
 export const SignInScreen = () => {
+  const [isAuthenticating, setIsAuthenticating] = useState(false)
+
   const {
     control,
     handleSubmit,
@@ -26,6 +30,8 @@ export const SignInScreen = () => {
 
   const handleSignIn = async ({ email, password }: SignInSchema) => {
     try {
+      setIsAuthenticating(true)
+
       const { data: signInResponse } = await api.post('/sessions', {
         email,
         password,
@@ -39,6 +45,9 @@ export const SignInScreen = () => {
         error.response.data.message ??
           'Não foi possível acessar sua conta. Tente novamente mais tarde.'
       )
+      // TO-DO: Add toast
+    } finally {
+      setIsAuthenticating(false)
     }
   }
 
@@ -89,8 +98,18 @@ export const SignInScreen = () => {
           {errors.password && <Text className='m-0 text-red-500'>{errors.password.message}</Text>}
         </Div>
 
-        <Button onPress={handleSubmit(handleSignIn)}>
-          <Text>Acessar</Text>
+        <Button
+          onPress={handleSubmit(handleSignIn)}
+          disabled={isAuthenticating}
+        >
+          {isAuthenticating ? (
+            <LucideLoaderCircle
+              className='animate-spin text-neutral-100'
+              size={20}
+            />
+          ) : (
+            <Text>Acessar</Text>
+          )}
         </Button>
       </Div>
 
