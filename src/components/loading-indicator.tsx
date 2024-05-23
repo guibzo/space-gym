@@ -1,5 +1,13 @@
+import { theme } from '@/theme'
 import { ActivityIndicator } from 'react-native'
 
 export const LoadingIndicator = () => {
-  return <ActivityIndicator color='#fafafa' />
+  const { colors } = theme
+
+  return (
+    <ActivityIndicator
+      color={colors.primary}
+      size={32}
+    />
+  )
 }

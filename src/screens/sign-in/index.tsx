@@ -3,8 +3,9 @@ import { AuthLayout } from '@/components/layouts/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/use-auth'
 import { api } from '@/lib/axios'
+import { saveUserOnStorage } from '@/local-storage/user-storage'
 import type { AuthNavigatorRoutesProps } from '@/routes/auth.routes'
 import { Div, H2, Span } from '@expo/html-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -39,6 +40,7 @@ export const SignInScreen = () => {
 
       if (signInResponse.user) {
         setUserData(signInResponse.user)
+        saveUserOnStorage(signInResponse.user)
       }
     } catch (error: any) {
       Alert.alert(

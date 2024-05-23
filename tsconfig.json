@@ -1,6 +1,6 @@
 {
   "extends": "expo/tsconfig.base",
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "../theme.ts"],
   "compilerOptions": {
     "strict": true,
     "baseUrl": "./",

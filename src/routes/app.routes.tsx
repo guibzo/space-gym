@@ -3,10 +3,10 @@ import { ExerciseScreen } from '@/screens/exercise'
 import { HistoryScreen } from '@/screens/history'
 import { HomeScreen } from '@/screens/home'
 import { ProfileScreen } from '@/screens/profile'
+import { theme } from '@/theme'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Platform } from 'react-native'
-import { theme } from 'theme'
 
 type AppRoutes = {
   home: undefined

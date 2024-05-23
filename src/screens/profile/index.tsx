@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
+import { useAuth } from '@/hooks/use-auth'
 import { Div, H3 } from '@expo/html-elements'
 import { getInfoAsync } from 'expo-file-system'
 import { MediaTypeOptions, launchImageLibraryAsync } from 'expo-image-picker'
@@ -12,7 +13,12 @@ import { useState } from 'react'
 import { Alert, ScrollView } from 'react-native'
 
 export const ProfileScreen = () => {
-  const [userAvatarUri, setUserAvatarUri] = useState<string | undefined>(undefined)
+  const { userData, setUserData } = useAuth()
+  const [avatarUri, setAvatarUri] = useState<string | null>(userData?.avatar ?? null)
+
+  if (!userData) {
+    return null
+  }
 
   const handleSelectAvatarImage = async () => {
     try {
@@ -35,7 +41,11 @@ export const ProfileScreen = () => {
           return Alert.alert('Escolha uma imagem de no máximo 5MB.')
         }
 
-        setUserAvatarUri(selectedImage.assets[0].uri)
+        setUserData({
+          ...userData!,
+          avatar: selectedImage.assets[0].uri,
+        })
+        setAvatarUri(selectedImage.assets[0].uri)
       }
     } catch (err) {
       console.log(err)
@@ -59,7 +69,7 @@ export const ProfileScreen = () => {
             className='size-[148px] m-0 p-0 border-2 border-neutral-700'
             alt="Zach Nugent's Avatar"
           >
-            <AvatarImage source={{ uri: userAvatarUri ?? undefined }} />
+            <AvatarImage source={{ uri: userData.avatar ?? undefined }} />
             <AvatarFallback>
               <LucideUser
                 size={74}
