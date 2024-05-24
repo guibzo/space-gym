@@ -16,7 +16,7 @@ export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
   const { navigate } = useNavigation<AppNavigatorRoutesProps>()
 
   return (
-    <TouchableOpacity onPress={() => navigate('exercise')}>
+    <TouchableOpacity onPress={() => navigate(`exercise`, { exerciseId: exercise.id })}>
       <Card className='bg-neutral-800 p-2 w-full flex justify-between flex-row items-center gap-2'>
         <Div className='flex flex-row gap-4 items-center'>
           <Image

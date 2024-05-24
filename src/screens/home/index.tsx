@@ -15,7 +15,7 @@ import { HomeHeader } from './header'
 export const HomeScreen = () => {
   const [exerciseGroups, setExerciseGroups] = useState<string[]>([])
   const [exercises, setExercises] = useState<Exercise[]>([])
-  const [activeExerciseGroupName, setActiveExerciseGroupName] = useState('antebraço')
+  const [activeExerciseGroupName, setActiveExerciseGroupName] = useState('')
 
   const [isExerciseGroupsLoading, setIsExerciseGroupsLoading] = useState(false)
   const [isExercisesLoading, setIsExercisesLoading] = useState(false)
@@ -28,6 +28,7 @@ export const HomeScreen = () => {
         const { data: exerciseGroupsList } = await api.get<string[]>('/groups')
 
         setExerciseGroups(exerciseGroupsList)
+        setActiveExerciseGroupName(exerciseGroupsList[0])
       } catch (error: any) {
         Alert.alert(
           `${error.response.data.message ?? 'Não foi possível carregar os grupos de exercício.'}`
