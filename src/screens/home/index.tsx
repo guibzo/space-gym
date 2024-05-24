@@ -1,38 +1,68 @@
+import type { Exercise } from '@/@types/exercise'
 import { AppLayout } from '@/components/layouts/app'
+import { LoadingIndicator } from '@/components/loading-indicator'
 import { Text } from '@/components/ui/text'
+import { api } from '@/lib/axios'
+import { theme } from '@/theme'
 import { Div } from '@expo/html-elements'
-import { useState } from 'react'
-import { FlatList } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
+import { useCallback, useEffect, useState } from 'react'
+import { Alert, FlatList } from 'react-native'
 import { ExerciseCard } from './exercise-card'
 import { ExerciseGroupItem } from './exercise-group-item'
 import { HomeHeader } from './header'
 
-const exercisesGroups = ['Costas', 'Bíceps', 'Tríceps', 'Ombro']
-const exercises = [
-  {
-    title: 'Puxada frontal',
-    description: '3 séries x 12 repetições',
-    imageUri: 'https://i.pinimg.com/564x/50/d5/99/50d59926c38acd2e0e157275a245fbc1.jpg',
-  },
-  {
-    title: 'Remada curva',
-    description: '3 séries x 12 repetições',
-    imageUri: 'https://i.pinimg.com/564x/bb/79/09/bb7909ca0e18f79828a3240e57115cca.jpg',
-  },
-  {
-    title: 'Remada unilateral',
-    description: '3 séries x 12 repetições',
-    imageUri: 'https://i.pinimg.com/564x/22/72/c9/2272c96968bcf39599ee619f96b61209.jpg',
-  },
-  {
-    title: 'Levantamento terra',
-    description: '3 séries x 12 repetições',
-    imageUri: 'https://i.pinimg.com/564x/51/2d/30/512d30073ab03722499db544927068c3.jpg',
-  },
-]
-
 export const HomeScreen = () => {
-  const [activeExercisesGroupName, setActiveExercisesGroupName] = useState('Costas')
+  const [exerciseGroups, setExerciseGroups] = useState<string[]>([])
+  const [exercises, setExercises] = useState<Exercise[]>([])
+  const [activeExerciseGroupName, setActiveExerciseGroupName] = useState('antebraço')
+
+  const [isExerciseGroupsLoading, setIsExerciseGroupsLoading] = useState(false)
+  const [isExercisesLoading, setIsExercisesLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchExerciseGroups = async () => {
+      try {
+        setIsExerciseGroupsLoading(true)
+
+        const { data: exerciseGroupsList } = await api.get<string[]>('/groups')
+
+        setExerciseGroups(exerciseGroupsList)
+      } catch (error: any) {
+        Alert.alert(
+          `${error.response.data.message ?? 'Não foi possível carregar os grupos de exercício.'}`
+        )
+      } finally {
+        setIsExerciseGroupsLoading(false)
+      }
+    }
+
+    fetchExerciseGroups()
+  }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchExercises = async () => {
+        try {
+          setIsExercisesLoading(true)
+
+          const { data: exercisesList } = await api.get<Exercise[]>(
+            `/exercises/bygroup/${activeExerciseGroupName}`
+          )
+
+          setExercises(exercisesList)
+        } catch (error: any) {
+          Alert.alert(
+            `${error.response.data.message ?? 'Não foi possível carregar os exercícios.'}`
+          )
+        } finally {
+          setIsExercisesLoading(false)
+        }
+      }
+
+      fetchExercises()
+    }, [activeExerciseGroupName])
+  )
 
   return (
     <>
@@ -40,22 +70,28 @@ export const HomeScreen = () => {
 
       <AppLayout>
         <Div className='w-full'>
-          <FlatList
-            data={exercisesGroups}
-            className='w-full h-12 mb-10'
-            horizontal
-            keyExtractor={(item, index) => `${item}-${index.toString()}`}
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName='flex flex-row gap-4'
-            renderItem={({ item: exerciseGroup, index }) => (
-              <ExerciseGroupItem
-                key={index}
-                title={exerciseGroup}
-                onPress={() => setActiveExercisesGroupName(exerciseGroup)}
-                currentActive={activeExercisesGroupName}
-              />
-            )}
-          />
+          {isExerciseGroupsLoading ? (
+            <Div className='mx-auto mb-4'>
+              <LoadingIndicator color={theme.colors.primary} />
+            </Div>
+          ) : (
+            <FlatList
+              data={exerciseGroups}
+              className='w-full h-12 mb-10'
+              horizontal
+              keyExtractor={(item, index) => `${item}-${index.toString()}`}
+              showsHorizontalScrollIndicator={false}
+              contentContainerClassName='flex flex-row gap-4'
+              renderItem={({ item: exerciseGroup, index }) => (
+                <ExerciseGroupItem
+                  key={index}
+                  title={exerciseGroup}
+                  onPress={() => setActiveExerciseGroupName(exerciseGroup)}
+                  currentActive={activeExerciseGroupName}
+                />
+              )}
+            />
+          )}
         </Div>
 
         <Div className=' w-full flex flex-row items-center justify-between mb-4'>
@@ -64,20 +100,27 @@ export const HomeScreen = () => {
         </Div>
 
         <Div className='w-full flex flex-col gap-3 pb-10 mb-10'>
-          <FlatList
-            data={exercises}
-            className='w-full mb-10'
-            keyExtractor={(item, index) => `${item}-${index.toString()}`}
-            contentContainerClassName='flex flex-col gap-3'
-            renderItem={({ item: exercise, index }) => (
-              <ExerciseCard
-                key={index}
-                description={exercise.description}
-                title={exercise.title}
-                imageUri={exercise.imageUri}
+          {isExercisesLoading ? (
+            <Div className='items-center mt-4 justify-center flex flex-1'>
+              <LoadingIndicator
+                color={theme.colors.primary}
+                size={32}
               />
-            )}
-          />
+            </Div>
+          ) : (
+            <FlatList
+              data={exercises}
+              className='w-full mb-10'
+              keyExtractor={(item, index) => `${item}-${index.toString()}`}
+              contentContainerClassName='flex flex-col gap-3'
+              renderItem={({ item: exercise, index }) => (
+                <ExerciseCard
+                  key={index}
+                  exercise={exercise}
+                />
+              )}
+            />
+          )}
         </Div>
       </AppLayout>
     </>

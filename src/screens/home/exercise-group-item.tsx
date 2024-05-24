@@ -16,7 +16,12 @@ export const ExerciseGroupItem = ({ title, currentActive, ...props }: ExerciseGr
         title === currentActive && 'border-primary'
       )}
     >
-      <Text className={cn('text-foreground', title === currentActive && 'text-primary font-bold')}>
+      <Text
+        className={cn(
+          'text-foreground uppercase text-sm font-semibold',
+          title === currentActive && 'text-primary font-bold'
+        )}
+      >
         {title}
       </Text>
     </TouchableOpacity>
