@@ -9,7 +9,9 @@ export const Router = () => {
 
   return (
     <Div className='flex-1 bg-neutral-900'>
-      <NavigationContainer>{userData ? <AppRoutes /> : <AuthRoutes />}</NavigationContainer>
+      <NavigationContainer>
+        {userData !== null ? <AppRoutes /> : <AuthRoutes />}
+      </NavigationContainer>
     </Div>
   )
 }

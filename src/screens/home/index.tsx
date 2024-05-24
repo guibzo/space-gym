@@ -1,13 +1,11 @@
-import { AppHeaderContainer } from '@/components/app-header-container'
-import { LucideLogOut, LucideUser } from '@/components/icons'
 import { AppLayout } from '@/components/layouts/app'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
-import { Div, Span, Strong } from '@expo/html-elements'
+import { Div } from '@expo/html-elements'
 import { useState } from 'react'
-import { FlatList, TouchableOpacity } from 'react-native'
+import { FlatList } from 'react-native'
 import { ExerciseCard } from './exercise-card'
 import { ExerciseGroupItem } from './exercise-group-item'
+import { HomeHeader } from './header'
 
 const exercisesGroups = ['Costas', 'Bíceps', 'Tríceps', 'Ombro']
 const exercises = [
@@ -34,37 +32,11 @@ const exercises = [
 ]
 
 export const HomeScreen = () => {
-  const [activeExercisesGroupItemName, setActiveExercisesGroupItemName] = useState('Costas')
+  const [activeExercisesGroupName, setActiveExercisesGroupName] = useState('Costas')
 
   return (
     <>
-      <AppHeaderContainer>
-        <Div className='flex flex-row w-full justify-between items-center'>
-          <Div className='flex flex-row gap-4 items-center'>
-            <Avatar
-              className='size-16'
-              alt="Zach Nugent's Avatar"
-            >
-              <AvatarImage source={{ uri: 'https://github.com/xbozo.png' }} />
-              <AvatarFallback>
-                <LucideUser className='w-8 h-8 text-neutral-400' />
-              </AvatarFallback>
-            </Avatar>
-
-            <Div className='flex'>
-              <Span className='text-neutral-100'>Olá,</Span>
-              <Strong className='text-neutral-100 '>Guilherme Viana</Strong>
-            </Div>
-          </Div>
-
-          <TouchableOpacity>
-            <LucideLogOut
-              accessibilityLabel='Sair'
-              className='size-5 text-neutral-200'
-            />
-          </TouchableOpacity>
-        </Div>
-      </AppHeaderContainer>
+      <HomeHeader />
 
       <AppLayout>
         <Div className='w-full'>
@@ -79,8 +51,8 @@ export const HomeScreen = () => {
               <ExerciseGroupItem
                 key={index}
                 title={exerciseGroup}
-                onPress={() => setActiveExercisesGroupItemName(exerciseGroup)}
-                currentActive={activeExercisesGroupItemName}
+                onPress={() => setActiveExercisesGroupName(exerciseGroup)}
+                currentActive={activeExercisesGroupName}
               />
             )}
           />

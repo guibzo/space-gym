@@ -13,3 +13,7 @@ export const getUserOnStorage = async () => {
 
   return userData
 }
+
+export const removeUserOnStorage = async () => {
+  await AsyncStorage.removeItem(USER_STORAGE_KEY)
+}
