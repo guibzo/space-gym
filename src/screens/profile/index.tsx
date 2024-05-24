@@ -49,6 +49,7 @@ export const ProfileScreen = () => {
       }
     } catch (err) {
       console.log(err)
+      Alert.alert('Tivemos um erro ao carregar seu avatar. Tente novamente mais tarde.')
     }
   }
 

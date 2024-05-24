@@ -1,5 +1,6 @@
 import type { User } from '@/@types/user'
 import { api } from '@/lib/axios'
+import { getAuthTokenOnStorage, saveAuthTokenOnStorage } from '@/local-storage/auth-token-storage'
 import { getUserOnStorage, saveUserOnStorage } from '@/local-storage/user-storage'
 import type { SignInSchema } from '@/screens/sign-in/sign-in-schema'
 import { createContext, useEffect, useState, type ReactNode } from 'react'
@@ -14,6 +15,11 @@ type AuthContextType = {
   isAuthenticating: boolean
 }
 
+type SignInResponse = {
+  token: string
+  user: User
+}
+
 export const AuthContext = createContext<AuthContextType>({} as AuthContextType)
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
@@ -26,14 +32,17 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsAuthenticating(true)
 
-      const { data: signInResponse } = await api.post('/sessions', {
+      const { data: signInResponse } = await api.post<SignInResponse>('/sessions', {
         email,
         password,
       })
 
-      if (signInResponse.user) {
+      if (signInResponse.user && signInResponse.token) {
         setUserData(signInResponse.user)
         saveUserOnStorage(signInResponse.user)
+        saveAuthTokenOnStorage(signInResponse.token)
+
+        api.defaults.headers.common['Authorization'] = `Bearer ${signInResponse.token}`
       }
     } catch (error: any) {
       Alert.alert(
@@ -49,8 +58,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const loadExistingUserData = async () => {
       const userDataOnStorage = await getUserOnStorage()
+      const authTokenOnStorage = await getAuthTokenOnStorage()
 
-      if (userDataOnStorage) {
+      if (authTokenOnStorage && userDataOnStorage) {
         setUserData(userDataOnStorage)
       }
 

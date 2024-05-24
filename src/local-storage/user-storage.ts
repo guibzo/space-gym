@@ -1,6 +1,6 @@
 import type { User } from '@/@types/user'
+import { USER_STORAGE_KEY } from '@/local-storage/storage-config'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { USER_STORAGE_KEY } from './storage-config'
 
 export const saveUserOnStorage = async (user: User) => {
   await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user))

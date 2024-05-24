@@ -6,6 +6,7 @@ import { Div, Span, Strong } from '@expo/html-elements'
 import { TouchableOpacity } from 'react-native'
 
 import fallbackAvatarImg from '@/assets/userPhotoDefault.png'
+import { removeAuthTokenOnStorage } from '@/local-storage/auth-token-storage'
 import { removeUserOnStorage } from '@/local-storage/user-storage'
 
 export const HomeHeader = () => {
@@ -16,6 +17,7 @@ export const HomeHeader = () => {
     setUserData(null)
 
     await removeUserOnStorage()
+    await removeAuthTokenOnStorage()
 
     setIsLoadingUserStorageData(false)
   }
