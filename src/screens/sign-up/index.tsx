@@ -1,17 +1,22 @@
 import { AuthLayout } from '@/components/layouts/auth'
+import { LoadingIndicator } from '@/components/loading-indicator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
+import { useAuth } from '@/hooks/use-auth'
 import { api } from '@/lib/axios'
 import type { AuthNavigatorRoutesProps } from '@/routes/auth.routes'
 import { Div, H2 } from '@expo/html-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigation } from '@react-navigation/native'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Alert } from 'react-native'
 import { createAccountSchema, type CreateAccountSchema } from './create-account-schema'
 
 export const SignUpScreen = () => {
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false)
+
   const {
     control,
     handleSubmit,
@@ -21,11 +26,19 @@ export const SignUpScreen = () => {
   })
 
   const { navigate } = useNavigation<AuthNavigatorRoutesProps>()
+  const { signIn } = useAuth()
 
   const handleCreateAccount = async ({ name, email, password }: CreateAccountSchema) => {
     try {
+      setIsCreatingAccount(true)
+
       await api.post('/users', {
         name,
+        email,
+        password,
+      })
+
+      signIn({
         email,
         password,
       })
@@ -35,9 +48,10 @@ export const SignUpScreen = () => {
           'Não foi possível criar sua conta. Tente novamente mais tarde.'
       )
       // TO-DO: Add toast
+    } finally {
+      setIsCreatingAccount(false)
     }
   }
-
   return (
     <AuthLayout>
       <Div className='flex flex-col gap-4 w-full'>
@@ -127,8 +141,11 @@ export const SignUpScreen = () => {
           )}
         </Div>
 
-        <Button onPress={handleSubmit(handleCreateAccount)}>
-          <Text>Criar e acessar</Text>
+        <Button
+          onPress={handleSubmit(handleCreateAccount)}
+          disabled={isCreatingAccount}
+        >
+          {isCreatingAccount ? <LoadingIndicator /> : <Text>Criar e acessar</Text>}
         </Button>
       </Div>
 

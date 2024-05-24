@@ -1,13 +1,14 @@
+import { LucideLoaderCircle } from '@/components/icons'
 import { theme } from '@/theme'
-import { ActivityIndicator } from 'react-native'
 
-export const LoadingIndicator = () => {
+export const LoadingIndicator = ({ color, size }: { color?: string; size?: number }) => {
   const { colors } = theme
 
   return (
-    <ActivityIndicator
-      color={colors.primary}
-      size={32}
+    <LucideLoaderCircle
+      className='animate-spin'
+      color={color ?? colors.neutral[100]}
+      size={size ?? 20}
     />
   )
 }

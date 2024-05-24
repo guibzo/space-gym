@@ -1,23 +1,18 @@
-import { LucideLoaderCircle } from '@/components/icons'
 import { AuthLayout } from '@/components/layouts/auth'
+import { LoadingIndicator } from '@/components/loading-indicator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/hooks/use-auth'
-import { api } from '@/lib/axios'
-import { saveUserOnStorage } from '@/local-storage/user-storage'
 import type { AuthNavigatorRoutesProps } from '@/routes/auth.routes'
+import { theme } from '@/theme'
 import { Div, H2, Span } from '@expo/html-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Alert } from 'react-native'
 import { signInSchema, type SignInSchema } from './sign-in-schema'
 
 export const SignInScreen = () => {
-  const [isAuthenticating, setIsAuthenticating] = useState(false)
-
   const {
     control,
     handleSubmit,
@@ -27,30 +22,14 @@ export const SignInScreen = () => {
   })
 
   const { navigate } = useNavigation<AuthNavigatorRoutesProps>()
-  const { setUserData } = useAuth()
+  const { isAuthenticating, signIn } = useAuth()
+  const { colors } = theme
 
   const handleSignIn = async ({ email, password }: SignInSchema) => {
-    try {
-      setIsAuthenticating(true)
-
-      const { data: signInResponse } = await api.post('/sessions', {
-        email,
-        password,
-      })
-
-      if (signInResponse.user) {
-        setUserData(signInResponse.user)
-        saveUserOnStorage(signInResponse.user)
-      }
-    } catch (error: any) {
-      Alert.alert(
-        error.response.data.message ??
-          'Não foi possível acessar sua conta. Tente novamente mais tarde.'
-      )
-      // TO-DO: Add toast
-    } finally {
-      setIsAuthenticating(false)
-    }
+    signIn({
+      email,
+      password,
+    })
   }
 
   return (
@@ -104,14 +83,7 @@ export const SignInScreen = () => {
           onPress={handleSubmit(handleSignIn)}
           disabled={isAuthenticating}
         >
-          {isAuthenticating ? (
-            <LucideLoaderCircle
-              className='animate-spin text-neutral-100'
-              size={20}
-            />
-          ) : (
-            <Text>Acessar</Text>
-          )}
+          {isAuthenticating ? <LoadingIndicator /> : <Text>Acessar</Text>}
         </Button>
       </Div>
 
