@@ -40,8 +40,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       if (signInResponse.user && signInResponse.token) {
         setUserData(signInResponse.user)
         saveUserOnStorage(signInResponse.user)
-        saveAuthTokenOnStorage(signInResponse.token)
 
+        saveAuthTokenOnStorage(signInResponse.token)
         api.defaults.headers.common['Authorization'] = `Bearer ${signInResponse.token}`
       }
     } catch (error: any) {
@@ -62,6 +62,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
       if (authTokenOnStorage && userDataOnStorage) {
         setUserData(userDataOnStorage)
+        api.defaults.headers.common['Authorization'] = `Bearer ${authTokenOnStorage}`
       }
 
       setIsLoadingUserStorageData(false)

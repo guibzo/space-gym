@@ -1,41 +1,42 @@
+import type { HistoryWithDay } from '@/@types/history'
 import { AppHeaderContainer } from '@/components/app-header-container'
 import { EmptyList } from '@/components/empty-list'
 import { AppLayout } from '@/components/layouts/app'
+import { LoadingIndicatorScreen } from '@/components/loading-indicator-screen'
 import { Text } from '@/components/ui/text'
+import { api } from '@/lib/axios'
 import { cn } from '@/utils/cn'
 import { Div, H3 } from '@expo/html-elements'
-import { SectionList } from 'react-native'
-import { ExerciseCard } from './exercise-card'
-
-const exercises = [
-  {
-    title: '26.08.2023',
-    data: [
-      {
-        title: 'Costas',
-        hour: '08:32',
-        description: 'Puxada frontal',
-      },
-      {
-        title: 'Costas',
-        hour: '08:32',
-        description: 'Puxada frontal',
-      },
-    ],
-  },
-  {
-    title: '27.08.2023',
-    data: [
-      {
-        title: 'Costas',
-        hour: '09:50',
-        description: 'Remada unilateral',
-      },
-    ],
-  },
-]
+import { useFocusEffect } from '@react-navigation/native'
+import { useCallback, useState } from 'react'
+import { Alert, SectionList } from 'react-native'
+import { HistoryItem } from './history-item'
 
 export const HistoryScreen = () => {
+  const [historyList, setHistoryList] = useState<HistoryWithDay[]>([])
+
+  const fetchHistory = async () => {
+    try {
+      const { data: history } = await api.get<HistoryWithDay[]>('/history')
+
+      setHistoryList(history)
+    } catch (error: any) {
+      Alert.alert(
+        `${error.response.data.message ?? 'Não foi carregar seu histórico de exercícios.'}`
+      )
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchHistory()
+    }, [])
+  )
+
+  if (!historyList || historyList.length === 0) {
+    return <LoadingIndicatorScreen />
+  }
+
   return (
     <>
       <AppHeaderContainer>
@@ -46,19 +47,19 @@ export const HistoryScreen = () => {
 
       <AppLayout>
         <SectionList
-          sections={exercises}
+          sections={historyList}
           className='w-full'
-          keyExtractor={(item, index) => `${item}-${index.toString()}`}
+          keyExtractor={(item) => item.id}
           contentContainerClassName={cn(
             'flex flex-col gap-3',
-            exercises.length === 0 && 'flex-1 items-center justify-center'
+            historyList.length === 0 && 'flex-1 items-center justify-center'
           )}
-          renderItem={({ item: exercise, index }) => (
-            <ExerciseCard
-              key={index}
-              title={exercise.title}
-              description={exercise.description}
-              hour={exercise.hour}
+          renderItem={({ item: historyItem }) => (
+            <HistoryItem
+              key={historyItem.id}
+              exerciseGroup={historyItem.group}
+              exerciseName={historyItem.name}
+              exerciseHour={historyItem.hour}
             />
           )}
           renderSectionHeader={({ section: { title: date } }) => <Text>{date}</Text>}

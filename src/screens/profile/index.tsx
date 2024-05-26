@@ -48,7 +48,6 @@ export const ProfileScreen = () => {
         setAvatarUri(selectedImage.assets[0].uri)
       }
     } catch (err) {
-      console.log(err)
       Alert.alert('Tivemos um erro ao carregar seu avatar. Tente novamente mais tarde.')
     }
   }

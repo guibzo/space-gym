@@ -7,11 +7,13 @@ import {
   LucideRepeat,
 } from '@/components/icons'
 import { AppLayout } from '@/components/layouts/app'
+import { LoadingIndicator } from '@/components/loading-indicator'
 import { LoadingIndicatorScreen } from '@/components/loading-indicator-screen'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { api } from '@/lib/axios'
+import type { AppNavigatorRoutesProps } from '@/routes/app.routes'
 import { Div } from '@expo/html-elements'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
@@ -23,13 +25,36 @@ type RouteParams = {
 
 export const ExerciseScreen = () => {
   const [exerciseDetails, setExerciseDetails] = useState<Exercise | null>(null)
+  const [isSubmittingToRealized, setIsSubmittingToRealized] = useState(false)
 
-  const { goBack } = useNavigation()
+  const { goBack, navigate } = useNavigation<AppNavigatorRoutesProps>()
   const { params } = useRoute()
   const { exerciseId } = params as RouteParams
 
+  const handleMarkAsRealized = async () => {
+    try {
+      setIsSubmittingToRealized(true)
+
+      await api.post('/history', {
+        exercise_id: exerciseId,
+      })
+
+      Alert.alert('Parabéns! Exercício registrado no seu histórico.')
+
+      navigate('history')
+    } catch (error: any) {
+      Alert.alert(
+        `${
+          error.response.data.message ?? 'Não foi possível registrar o exercício em seu histórico.'
+        }`
+      )
+    } finally {
+      setIsSubmittingToRealized(false)
+    }
+  }
+
   useEffect(() => {
-    const fetchExerciseGroups = async () => {
+    const fetchExerciseDetails = async () => {
       try {
         const { data: exerciseDetails } = await api.get<Exercise>(`/exercises/${exerciseId}`)
 
@@ -41,7 +66,7 @@ export const ExerciseScreen = () => {
       }
     }
 
-    fetchExerciseGroups()
+    fetchExerciseDetails()
   }, [exerciseId])
 
   if (!exerciseDetails) {
@@ -106,8 +131,15 @@ export const ExerciseScreen = () => {
           </CardHeader>
 
           <CardContent>
-            <Button>
-              <Text className='font-semibold'>Marcar como realizado</Text>
+            <Button
+              onPress={handleMarkAsRealized}
+              disabled={isSubmittingToRealized}
+            >
+              {isSubmittingToRealized ? (
+                <LoadingIndicator />
+              ) : (
+                <Text className='font-semibold'>Marcar como realizado</Text>
+              )}
             </Button>
           </CardContent>
         </Card>
