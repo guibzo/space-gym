@@ -15,8 +15,8 @@ export const createAccountSchema = z
       .string({ required_error: 'Este campo é obrigatório.' })
       .min(6, 'Sua senha deve ter pelo menos 6 caracteres.'),
   })
-  .superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password) {
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (password !== confirmPassword) {
       ctx.addIssue({
         code: 'custom',
         message: 'As senhas devem ser iguais.',

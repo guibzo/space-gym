@@ -11,8 +11,9 @@ type AuthContextType = {
   setUserData: (user: User | null) => void
   setIsLoadingUserStorageData: (isLoading: boolean) => void
   isLoadingUserStorageData: boolean
-  signIn: ({ email, password }: SignInSchema) => void
+  signIn: ({ email, password }: SignInSchema) => Promise<void>
   isAuthenticating: boolean
+  updateUserProfile: (updatedUser: User) => Promise<void>
 }
 
 type SignInResponse = {
@@ -39,7 +40,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
       if (signInResponse.user && signInResponse.token) {
         setUserData(signInResponse.user)
-        saveUserOnStorage(signInResponse.user)
+        await saveUserOnStorage(signInResponse.user)
 
         saveAuthTokenOnStorage(signInResponse.token)
         api.defaults.headers.common['Authorization'] = `Bearer ${signInResponse.token}`
@@ -53,6 +54,11 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsAuthenticating(false)
     }
+  }
+
+  const updateUserProfile = async (updatedUserData: User) => {
+    setUserData(updatedUserData)
+    await saveUserOnStorage(updatedUserData)
   }
 
   useEffect(() => {
@@ -78,6 +84,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     setIsLoadingUserStorageData,
     signIn,
     isAuthenticating,
+    updateUserProfile,
   }
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

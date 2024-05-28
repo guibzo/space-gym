@@ -9,7 +9,7 @@ export const saveUserOnStorage = async (user: User) => {
 export const getUserOnStorage = async () => {
   const userOnStorage = await AsyncStorage.getItem(USER_STORAGE_KEY)
 
-  const userData: User = userOnStorage ? JSON.parse(userOnStorage) : null
+  const userData: User = userOnStorage ? await JSON.parse(userOnStorage) : null
 
   return userData
 }

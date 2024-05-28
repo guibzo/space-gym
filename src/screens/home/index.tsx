@@ -73,7 +73,7 @@ export const HomeScreen = () => {
         <Div className='w-full'>
           {isExerciseGroupsLoading ? (
             <Div className='mx-auto mb-4'>
-              <LoadingIndicator color={theme.colors.primary} />
+              <LoadingIndicator color={theme.colors.primary} size={32} />
             </Div>
           ) : (
             <FlatList

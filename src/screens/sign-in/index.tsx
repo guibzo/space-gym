@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/hooks/use-auth'
 import type { AuthNavigatorRoutesProps } from '@/routes/auth.routes'
-import { theme } from '@/theme'
 import { Div, H2, Span } from '@expo/html-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigation } from '@react-navigation/native'
@@ -23,7 +22,6 @@ export const SignInScreen = () => {
 
   const { navigate } = useNavigation<AuthNavigatorRoutesProps>()
   const { isAuthenticating, signIn } = useAuth()
-  const { colors } = theme
 
   const handleSignIn = async ({ email, password }: SignInSchema) => {
     signIn({

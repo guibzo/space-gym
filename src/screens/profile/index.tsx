@@ -1,20 +1,41 @@
 import { AppHeaderContainer } from '@/components/app-header-container'
 import { LucideUser } from '@/components/icons'
 import { AppLayout } from '@/components/layouts/app'
+import { LoadingIndicator } from '@/components/loading-indicator'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/hooks/use-auth'
+import { api } from '@/lib/axios'
 import { Div, H3 } from '@expo/html-elements'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { getInfoAsync } from 'expo-file-system'
 import { MediaTypeOptions, launchImageLibraryAsync } from 'expo-image-picker'
 import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { Alert, ScrollView } from 'react-native'
+import { updateProfileSchema, type UpdateProfileSchema } from './update-profile-schema'
 
 export const ProfileScreen = () => {
-  const { userData, setUserData } = useAuth()
-  const [avatarUri, setAvatarUri] = useState<string | null>(userData?.avatar ?? null)
+  const [isUpdatingUserProfile, setIsUpdatingUserProfile] = useState(false)
+  const { userData, setUserData, updateUserProfile } = useAuth()
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    trigger,
+    resetField,
+  } = useForm<UpdateProfileSchema>({
+    resolver: zodResolver(updateProfileSchema),
+    mode: 'onChange',
+    defaultValues: {
+      name: userData?.name,
+      email: userData?.email,
+    },
+  })
 
   if (!userData) {
     return null
@@ -45,10 +66,41 @@ export const ProfileScreen = () => {
           ...userData!,
           avatar: selectedImage.assets[0].uri,
         })
-        setAvatarUri(selectedImage.assets[0].uri)
       }
-    } catch (err) {
-      Alert.alert('Tivemos um erro ao carregar seu avatar. Tente novamente mais tarde.')
+    } catch (error: any) {
+      Alert.alert(
+        error.response.data.message ??
+          'Tivemos um erro ao carregar seu avatar. Tente novamente mais tarde.'
+      )
+    }
+  }
+
+  const handleUpdateProfile = async ({ name, newPassword, oldPassword }: UpdateProfileSchema) => {
+    try {
+      setIsUpdatingUserProfile(true)
+
+      await api.put('/users', {
+        password: newPassword,
+        old_password: oldPassword,
+        name,
+      })
+
+      await updateUserProfile({
+        ...userData,
+        name,
+      })
+
+      resetField('oldPassword')
+      resetField('newPassword')
+      resetField('confirmNewPassword')
+
+      Alert.alert('Perfil atualizado com sucesso!')
+    } catch (error: any) {
+      Alert.alert(
+        error.response.data.message ?? 'Erro ao atualizar perfil. Tente novamente mais tarde.'
+      )
+    } finally {
+      setIsUpdatingUserProfile(false)
     }
   }
 
@@ -87,36 +139,136 @@ export const ProfileScreen = () => {
           </Button>
 
           <Div className='flex flex-col gap-2 w-full mt-8'>
-            <Input
-              placeholder='Digite seu nome'
-              value='Guilherme Viana'
-            />
+            <Div className='flex flex-col gap-1'>
+              <Controller
+                control={control}
+                name='name'
+                rules={{
+                  required: true,
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    placeholder='Digite seu nome'
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                )}
+              />
 
-            <Input
-              placeholder='Digite seu e-mail'
-              keyboardType='email-address'
-              value='iml18@hotmail.com'
-              editable={false}
-            />
+              {errors.name && <Text className='m-0 text-red-500'>{errors.name.message}</Text>}
+            </Div>
+
+            <Div className='flex flex-col gap-1'>
+              <Controller
+                control={control}
+                name='email'
+                rules={{
+                  required: true,
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    placeholder='Digite seu e-mail'
+                    keyboardType='email-address'
+                    onChangeText={onChange}
+                    value={value}
+                    editable={false}
+                  />
+                )}
+              />
+
+              {errors.email && <Text className='m-0 text-red-500'>{errors.email.message}</Text>}
+            </Div>
           </Div>
 
           <Div className='flex flex-col gap-4 w-full mt-8'>
             <Text className='text-lg font-semibold'>Alterar senha</Text>
 
             <Div className='flex flex-col gap-2'>
-              <Input
-                placeholder='Senha antiga'
-                secureTextEntry
-              />
+              <Div className='flex flex-col gap-1'>
+                <Controller
+                  control={control}
+                  name='oldPassword'
+                  rules={{
+                    required: true,
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      placeholder='Senha antiga'
+                      secureTextEntry
+                      onChangeText={(text) => {
+                        onChange(text)
+                        setValue('oldPassword', text === '' ? undefined : text)
+                        trigger('oldPassword')
+                      }}
+                      value={value ?? undefined}
+                    />
+                  )}
+                />
 
-              <Input
-                placeholder='Nova senha'
-                secureTextEntry
-              />
+                {errors.oldPassword && (
+                  <Text className='m-0 text-red-500'>{errors.oldPassword.message}</Text>
+                )}
+              </Div>
+
+              <Div className='flex flex-col gap-1'>
+                <Controller
+                  control={control}
+                  name='newPassword'
+                  rules={{
+                    required: true,
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      placeholder='Nova senha'
+                      secureTextEntry
+                      onChangeText={(text) => {
+                        onChange(text)
+                        setValue('newPassword', text === '' ? undefined : text)
+                        trigger('newPassword')
+                      }}
+                      value={value ?? undefined}
+                    />
+                  )}
+                />
+
+                {errors.newPassword && (
+                  <Text className='m-0 text-red-500'>{errors.newPassword.message}</Text>
+                )}
+              </Div>
+
+              <Div className='flex flex-col gap-1'>
+                <Controller
+                  control={control}
+                  name='confirmNewPassword'
+                  rules={{
+                    required: true,
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      placeholder='Confirmar nova senha'
+                      secureTextEntry
+                      onChangeText={(text) => {
+                        onChange(text)
+                        setValue('confirmNewPassword', text === '' ? undefined : text)
+                        trigger('confirmNewPassword')
+                      }}
+                      value={value ?? undefined}
+                    />
+                  )}
+                />
+
+                {errors.confirmNewPassword && (
+                  <Text className='m-0 text-red-500'>{errors.confirmNewPassword.message}</Text>
+                )}
+              </Div>
             </Div>
 
-            <Button>
-              <Text className='bg-primary text-lg font-semibold'>Atualizar</Text>
+            <Button onPress={handleSubmit(handleUpdateProfile)}>
+              {isUpdatingUserProfile ? (
+                <LoadingIndicator />
+              ) : (
+                <Text className='bg-primary text-lg font-semibold'>Atualizar</Text>
+              )}
             </Button>
           </Div>
         </ScrollView>
