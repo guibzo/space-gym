@@ -6,6 +6,7 @@ import { Div, Span, Strong } from '@expo/html-elements'
 import { TouchableOpacity } from 'react-native'
 
 import fallbackAvatarImg from '@/assets/userPhotoDefault.png'
+import { api } from '@/lib/axios'
 import { removeAuthTokenOnStorage } from '@/local-storage/auth-token-storage'
 import { removeUserOnStorage } from '@/local-storage/user-storage'
 
@@ -22,6 +23,8 @@ export const HomeHeader = () => {
     setIsLoadingUserStorageData(false)
   }
 
+  const userAvatar = `${api.defaults.baseURL}/avatar/${userData?.avatar}`
+
   return (
     <AppHeaderContainer>
       <Div className='flex flex-row w-full justify-between items-center'>
@@ -30,7 +33,7 @@ export const HomeHeader = () => {
             className='size-16'
             alt="Zach Nugent's Avatar"
           >
-            <AvatarImage source={userData?.avatar ? { uri: userData.avatar } : fallbackAvatarImg} />
+            <AvatarImage source={userAvatar ? { uri: userAvatar } : fallbackAvatarImg} />
           </Avatar>
 
           <Div className='flex'>

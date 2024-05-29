@@ -1,3 +1,4 @@
+import fallbackAvatarImg from '@/assets/userPhotoDefault.png'
 import { AppHeaderContainer } from '@/components/app-header-container'
 import { LucideUser } from '@/components/icons'
 import { AppLayout } from '@/components/layouts/app'
@@ -19,7 +20,7 @@ import { updateProfileSchema, type UpdateProfileSchema } from './update-profile-
 
 export const ProfileScreen = () => {
   const [isUpdatingUserProfile, setIsUpdatingUserProfile] = useState(false)
-  const { userData, setUserData, updateUserProfile } = useAuth()
+  const { userData, updateUserProfile } = useAuth()
 
   const {
     control,
@@ -41,6 +42,8 @@ export const ProfileScreen = () => {
     return null
   }
 
+  const userAvatar = `${api.defaults.baseURL}/avatar/${userData?.avatar}`
+
   const handleSelectAvatarImage = async () => {
     try {
       const selectedImage = await launchImageLibraryAsync({
@@ -50,9 +53,7 @@ export const ProfileScreen = () => {
         allowsEditing: true,
       })
 
-      if (selectedImage.canceled) {
-        return
-      }
+      if (selectedImage.canceled) return
 
       if (selectedImage.assets[0].uri) {
         const photoInfo = await getInfoAsync(selectedImage.assets[0].uri)
@@ -62,15 +63,58 @@ export const ProfileScreen = () => {
           return Alert.alert('Escolha uma imagem de no máximo 5MB.')
         }
 
-        setUserData({
-          ...userData!,
-          avatar: selectedImage.assets[0].uri,
-        })
+        const fileExtension = selectedImage.assets[0].uri.split('.').pop()
+
+        const sanitizedImageName = `${userData.name}.${fileExtension}`
+          .trim()
+          .split(' ')
+          .join('-')
+          .toLowerCase()
+
+        const avatarImageFile = {
+          name: sanitizedImageName,
+          uri: selectedImage.assets[0].uri,
+          type: selectedImage.assets[0].mimeType,
+        } as any
+
+        const avatarImageUploadForm = new FormData()
+        avatarImageUploadForm.append('avatar', avatarImageFile)
+
+        await handleUpdateUserAvatar({ avatarImageUploadForm })
       }
     } catch (error: any) {
       Alert.alert(
         error.response.data.message ??
           'Tivemos um erro ao carregar seu avatar. Tente novamente mais tarde.'
+      )
+    }
+  }
+
+  const handleUpdateUserAvatar = async ({
+    avatarImageUploadForm,
+  }: {
+    avatarImageUploadForm: FormData
+  }) => {
+    try {
+      const { data: updateAvatarResponse } = await api.patch(
+        '/users/avatar',
+        avatarImageUploadForm,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+
+      await updateUserProfile({
+        ...userData,
+        avatar: updateAvatarResponse.avatar,
+      })
+
+      Alert.alert('Avatar atualizado com sucesso!')
+    } catch (error: any) {
+      Alert.alert(
+        `${error.response.data.message ?? 'Não foi possível carregar os detalhes do exercício.'}`
       )
     }
   }
@@ -121,7 +165,7 @@ export const ProfileScreen = () => {
             className='size-[148px] m-0 p-0 border-2 border-neutral-700'
             alt="Zach Nugent's Avatar"
           >
-            <AvatarImage source={{ uri: userData.avatar ?? undefined }} />
+            <AvatarImage source={userAvatar ? { uri: userAvatar } : fallbackAvatarImg} />
             <AvatarFallback>
               <LucideUser
                 size={74}
