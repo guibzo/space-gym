@@ -1,5 +1,4 @@
 import type { Exercise } from '@/@types/exercise'
-import { AppLayout } from '@/components/layouts/app'
 import { LoadingIndicator } from '@/components/loading-indicator'
 import { Text } from '@/components/ui/text'
 import { api } from '@/lib/axios'
@@ -66,14 +65,17 @@ export const HomeScreen = () => {
   )
 
   return (
-    <>
+    <Div className='flex-1 items-center bg-neutral-900 pb-11'>
       <HomeHeader />
 
-      <AppLayout>
+      <Div className='w-full mt-8 bg-neutral-900 pl-8 pr-2'>
         <Div className='w-full'>
           {isExerciseGroupsLoading ? (
             <Div className='mx-auto mb-4'>
-              <LoadingIndicator color={theme.colors.primary} size={32} />
+              <LoadingIndicator
+                color={theme.colors.primary}
+                size={32}
+              />
             </Div>
           ) : (
             <FlatList
@@ -94,7 +96,9 @@ export const HomeScreen = () => {
             />
           )}
         </Div>
+      </Div>
 
+      <Div className='w-full px-8 flex'>
         <Div className=' w-full flex flex-row items-center justify-between mb-4'>
           <Text className='font-semibold text-lg'>Exercícios</Text>
           <Text>4</Text>
@@ -113,7 +117,7 @@ export const HomeScreen = () => {
               data={exercises}
               className='w-full mb-10'
               keyExtractor={(item, index) => `${item}-${index.toString()}`}
-              contentContainerClassName='flex flex-col gap-3'
+              contentContainerClassName='gap-3'
               renderItem={({ item: exercise, index }) => (
                 <ExerciseCard
                   key={index}
@@ -123,7 +127,7 @@ export const HomeScreen = () => {
             />
           )}
         </Div>
-      </AppLayout>
-    </>
+      </Div>
+    </Div>
   )
 }

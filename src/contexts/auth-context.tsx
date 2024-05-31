@@ -1,7 +1,15 @@
 import type { User } from '@/@types/user'
 import { api } from '@/lib/axios'
-import { getAuthTokenOnStorage, saveAuthTokenOnStorage } from '@/local-storage/auth-token-storage'
-import { getUserOnStorage, saveUserOnStorage } from '@/local-storage/user-storage'
+import {
+  getAuthTokenOnStorage,
+  removeAuthTokenOnStorage,
+  saveAuthTokenOnStorage,
+} from '@/local-storage/auth-token-storage'
+import {
+  getUserOnStorage,
+  removeUserOnStorage,
+  saveUserOnStorage,
+} from '@/local-storage/user-storage'
 import type { SignInSchema } from '@/screens/sign-in/sign-in-schema'
 import { createContext, useEffect, useState, type ReactNode } from 'react'
 import { Alert } from 'react-native'
@@ -12,12 +20,14 @@ type AuthContextType = {
   setIsLoadingUserStorageData: (isLoading: boolean) => void
   isLoadingUserStorageData: boolean
   signIn: ({ email, password }: SignInSchema) => Promise<void>
+  signOut: () => Promise<void>
   isAuthenticating: boolean
   updateUserProfile: (updatedUser: User) => Promise<void>
 }
 
 type SignInResponse = {
   token: string
+  refresh_token: string
   user: User
 }
 
@@ -38,11 +48,15 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         password,
       })
 
-      if (signInResponse.user && signInResponse.token) {
+      if (signInResponse.user && signInResponse.token && signInResponse.refresh_token) {
         setUserData(signInResponse.user)
         await saveUserOnStorage(signInResponse.user)
 
-        saveAuthTokenOnStorage(signInResponse.token)
+        saveAuthTokenOnStorage({
+          token: signInResponse.token,
+          refreshToken: signInResponse.refresh_token,
+        })
+
         api.defaults.headers.common['Authorization'] = `Bearer ${signInResponse.token}`
       }
     } catch (error: any) {
@@ -54,6 +68,16 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsAuthenticating(false)
     }
+  }
+
+  const signOut = async () => {
+    setIsLoadingUserStorageData(true)
+    setUserData(null)
+
+    await removeUserOnStorage()
+    await removeAuthTokenOnStorage()
+
+    setIsLoadingUserStorageData(false)
   }
 
   const updateUserProfile = async (updatedUserData: User) => {
@@ -68,7 +92,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
       if (authTokenOnStorage && userDataOnStorage) {
         setUserData(userDataOnStorage)
-        api.defaults.headers.common['Authorization'] = `Bearer ${authTokenOnStorage}`
+        api.defaults.headers.common['Authorization'] = `Bearer ${authTokenOnStorage.token}`
       }
 
       setIsLoadingUserStorageData(false)
@@ -77,12 +101,21 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     loadExistingUserData()
   }, [])
 
+  useEffect(() => {
+    const subscribe = api.registerInterceptTokenManager(signOut)
+
+    return () => {
+      subscribe()
+    }
+  }, [signOut])
+
   const contextValue = {
     userData,
     setUserData,
     isLoadingUserStorageData,
     setIsLoadingUserStorageData,
     signIn,
+    signOut,
     isAuthenticating,
     updateUserProfile,
   }

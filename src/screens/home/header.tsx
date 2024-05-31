@@ -7,21 +7,9 @@ import { TouchableOpacity } from 'react-native'
 
 import fallbackAvatarImg from '@/assets/userPhotoDefault.png'
 import { api } from '@/lib/axios'
-import { removeAuthTokenOnStorage } from '@/local-storage/auth-token-storage'
-import { removeUserOnStorage } from '@/local-storage/user-storage'
 
 export const HomeHeader = () => {
-  const { userData, setUserData, setIsLoadingUserStorageData, isLoadingUserStorageData } = useAuth()
-
-  const signOut = async () => {
-    setIsLoadingUserStorageData(true)
-    setUserData(null)
-
-    await removeUserOnStorage()
-    await removeAuthTokenOnStorage()
-
-    setIsLoadingUserStorageData(false)
-  }
+  const { userData, signOut, isLoadingUserStorageData } = useAuth()
 
   const userAvatar = `${api.defaults.baseURL}/avatar/${userData?.avatar}`
 

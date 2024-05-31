@@ -26,7 +26,7 @@ export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
           />
 
           <Div>
-            <Text className='font-semibold text-lg'>{exercise.name}</Text>
+            <Text className='font-semibold text-lg overflow-hidden truncate'>{exercise.name}</Text>
             <Text className='text-neutral-400'>
               {exercise.series} séries x {exercise.repetitions} repetições
             </Text>
